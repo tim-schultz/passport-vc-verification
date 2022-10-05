@@ -2,7 +2,8 @@
   "@context": ["https://www.w3.org/2018/credentials/v1", "https://schema.org", "https://w3id.org/security/v2"],
   "type": ["VerifiableCredential"],
   "credentialSubject": {
-    "name": "MakerDAO",
-    "category": "DeFi"
+    "id": "did:pkh:eip155:1:0xe4c81FCb008E04C9bc5AD607f0cb14E4AC07896d",
+    "iamHash": "v0.0.0:k4jNBdi0jv09I+gYEtRvd8w9XlJwnN3ivilkun4c81g=",
+    "provider": "Google"
   }
 }

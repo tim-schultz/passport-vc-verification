@@ -43,21 +43,22 @@ const vcbaseType = [
   },
 ];
 
-export const primaryType = "DaoVc";
+export const primaryType = "StampVc";
 
-const daoType = [
-  { name: "name", type: "string" },
-  { name: "category", type: "string" },
+const stampType = [
+  { name: "id", type: "string" },
+  { name: "iamHash", type: "string" },
+  { name: "provider", type: "string" },
 ];
 
 const exampleCredentialSubjectType = [
   {
     name: "credentialSubject",
-    type: "DAO",
+    type: "Stamp",
   },
 ];
 
-export const daoVCTypes = {
+export const stampVCTypes = {
   [primaryType]: [...vcbaseType, ...exampleCredentialSubjectType],
-  DAO: daoType,
+  Stamp: stampType,
 };

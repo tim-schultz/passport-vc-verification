@@ -4,7 +4,8 @@ export type ExampleDocument = {
   "@context": string[];
   type: string[];
   credentialSubject: {
-    name: string;
-    category: string;
+    id: string;
+    iamHash: string;
+    provider: string;
   };
 };

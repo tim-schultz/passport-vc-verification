@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Signature, ethers } from "ethers";
 
 import { ExampleDocument } from "../types";
-import { daoVCTypes, primaryType } from "../types/eip712Types";
+import { primaryType, stampVCTypes } from "../types/eip712Types";
 
 const getDomain = (name: string, chainId: number, verifyingContract: string) => ({
   name,
@@ -46,7 +46,7 @@ export const getSerializedSignedVC = async ({
           name: domainName,
         },
         primaryType,
-        types: daoVCTypes,
+        types: stampVCTypes,
       },
       proofPurpose: "assertionMethod",
       proofValue: {
@@ -72,8 +72,9 @@ export type NormalizedDocument = {
   _context: string[];
   _type: string[];
   credentialSubject: {
-    name: string;
-    category: string;
+    id: string;
+    iamHash: string;
+    provider: string;
   };
   issuer: string;
   issuanceDate: string;
@@ -112,7 +113,7 @@ export const signDocument = async ({
 
   let sig: string;
   try {
-    sig = await signer._signTypedData(domain, daoVCTypes, normalizedDocument);
+    sig = await signer._signTypedData(domain, stampVCTypes, normalizedDocument);
   } catch (err) {
     console.error(err);
     throw err;

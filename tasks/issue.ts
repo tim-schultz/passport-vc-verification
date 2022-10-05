@@ -16,7 +16,7 @@ task("issue", "Issue a signed and serialized VC", async (_taskArgs, hre) => {
   const serializedVC = await getSerializedSignedVC({
     signer,
     chainId,
-    domainName: "dao-vc-verifier-test",
+    domainName: "stamp-vc-verifier-test",
     verifyingContractAddress: hre.ethers.constants.AddressZero,
     document: exampleDocument,
   });
