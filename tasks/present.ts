@@ -16,7 +16,9 @@ task("present", "Present a VC that gets verified on-chain", async (_taskArgs, hr
   }
 
   const stampVcVerifierFactory = <StampVcVerifier__factory>await hre.ethers.getContractFactory("StampVcVerifier");
-  const stampVCVerifier = <StampVcVerifier>await stampVcVerifierFactory.connect(signers[0]).deploy(domainName);
+  const stampVCVerifier = <StampVcVerifier>(
+    await stampVcVerifierFactory.connect(signers[0]).deploy(domainName, signer.address)
+  );
 
   await stampVCVerifier.deployed();
   console.log({ exampleDocument });

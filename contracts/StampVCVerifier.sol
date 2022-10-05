@@ -2,7 +2,6 @@
 pragma solidity >=0.8.4;
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-
 import { VcVerifier } from "./VCVerifier.sol";
 import { DIDpkhAdapter } from "./DIDpkhAdapter.sol";
 
@@ -28,7 +27,11 @@ contract StampVcVerifier is VcVerifier, DIDpkhAdapter {
             "StampVc(string[] _context,string[] _type,string issuer,string issuanceDate,Stamp credentialSubject)Stamp(string id,string iamHash,string provider)"
         );
 
-    constructor(string memory domainName) VcVerifier(domainName) {}
+    address public _verifier;
+
+    constructor(string memory domainName, address verifier) VcVerifier(domainName) {
+        _verifier = verifier;
+    }
 
     function hashCredentialSubject(Stamp calldata stamp) public pure returns (bytes32) {
         return
@@ -73,7 +76,8 @@ contract StampVcVerifier is VcVerifier, DIDpkhAdapter {
 
         address recoveredAddress = ECDSA.recover(digest, v, r, s);
 
-        require(recoveredAddress == issuerAddress, "VC verification failed");
+        require(recoveredAddress == issuerAddress, "VC verification failed issuer does not match signature");
+        require(recoveredAddress == _verifier, "Not signed by iAM");
 
         return true;
     }
