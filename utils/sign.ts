@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Signature, ethers } from "ethers";
 
 import { ExampleDocument } from "../types";
-import { primaryType, stampVCTypes } from "../types/eip712Types";
+import { primaryType, stampVCTypes } from "../types/passportTypes";
 
 const getDomain = (name: string, chainId: number, verifyingContract: string) => ({
   name,
@@ -60,12 +60,13 @@ export const getSerializedSignedVC = async ({
   };
 };
 
-export type FullDocument = ExampleDocument & { issuer: string; issuanceDate: string };
-
+export type FullDocument = ExampleDocument & { issuer: string; issuanceDate: string; expirationDate: string };
+const date = new Date();
 const generateFullDocument = (signerAddress: string, document: ExampleDocument): FullDocument => ({
   ...document,
   issuer: `did:pkh:eip155:1:${signerAddress}`,
-  issuanceDate: new Date().toISOString(),
+  issuanceDate: date.toISOString(),
+  expirationDate: new Date(date.setMonth(date.getMonth() + 3)).toISOString(),
 });
 
 export type NormalizedDocument = {
@@ -78,6 +79,7 @@ export type NormalizedDocument = {
   };
   issuer: string;
   issuanceDate: string;
+  expirationDate: string;
 };
 
 const normalizeDocument = (fullDocument: FullDocument): NormalizedDocument => {
@@ -99,7 +101,7 @@ export type SignDocumentInputs = {
   domainName: string;
   verifyingContractAddress: string;
   chainId: number;
-  normalizedDocument: NormalizedDocument & { issuer: string; issuanceDate: string };
+  normalizedDocument: NormalizedDocument & { issuer: string; issuanceDate: string; expirationDate: string };
 };
 
 export const signDocument = async ({
@@ -113,6 +115,7 @@ export const signDocument = async ({
 
   let sig: string;
   try {
+    console.log({ domain, stampVCTypes, normalizedDocument });
     sig = await signer._signTypedData(domain, stampVCTypes, normalizedDocument);
   } catch (err) {
     console.error(err);

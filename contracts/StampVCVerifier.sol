@@ -16,6 +16,7 @@ struct StampVc {
     string[] _type;
     string issuer;
     string issuanceDate;
+    string expirationDate;
     Stamp credentialSubject;
 }
 
@@ -24,7 +25,7 @@ contract StampVcVerifier is VcVerifier, DIDpkhAdapter {
 
     bytes32 private constant STAMP_VC_TYPEHASH =
         keccak256(
-            "StampVc(string[] _context,string[] _type,string issuer,string issuanceDate,Stamp credentialSubject)Stamp(string id,string iamHash,string provider)"
+            "StampVc(string[] _context,string[] _type,string issuer,string issuanceDate,string expirationDate,Stamp credentialSubject)Stamp(string id,string iamHash,string provider)"
         );
 
     address public _verifier;
@@ -56,6 +57,7 @@ contract StampVcVerifier is VcVerifier, DIDpkhAdapter {
                     _hashArray(stampVc._type),
                     keccak256(bytes(stampVc.issuer)),
                     keccak256(bytes(stampVc.issuanceDate)),
+                    keccak256(bytes(stampVc.expirationDate)),
                     credentialSubjectHash
                 )
             );
