@@ -12,6 +12,8 @@ task("present", "Present a VC that gets verified on-chain", async (_taskArgs, hr
   const signers: SignerWithAddress[] = await hre.ethers.getSigners();
   const signer = signers[0];
 
+  const submitter = signers[1];
+
   if (!chainId) {
     throw new Error("Missing chain id");
   }
@@ -39,8 +41,8 @@ task("present", "Present a VC that gets verified on-chain", async (_taskArgs, hr
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { proof, ...vcWithoutProof } = serializedVC;
 
-  const gasCost = await stampVCVerifier.estimateGas.verifyStampVc(vcWithoutProof, v, r, s);
-  const result = await stampVCVerifier.verifyStampVc(vcWithoutProof, v, r, s);
+  const gasCost = await stampVCVerifier.connect(submitter).estimateGas.verifyStampVc(vcWithoutProof, v, r, s);
+  const result = await stampVCVerifier.connect(submitter).verifyStampVc(vcWithoutProof, v, r, s);
 
   console.log("Gas cost: ", gasCost.toString());
   console.log("Verification passed on-chain? ", result);
