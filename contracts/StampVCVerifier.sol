@@ -30,7 +30,9 @@ contract StampVcVerifier is VcVerifier, DIDpkhAdapter {
 
     address public _verifier;
 
-    event Verified(bytes32 indexed id, bytes32 iamHash, bytes32 provider);
+    event Verified(string indexed id, string iamHash, string provider);
+
+    mapping(string => string) public verifiedStamps;
 
     constructor(string memory domainName, address verifier) VcVerifier(domainName) {
         _verifier = verifier;
@@ -83,10 +85,12 @@ contract StampVcVerifier is VcVerifier, DIDpkhAdapter {
         require(recoveredAddress == issuerAddress, "VC verification failed issuer does not match signature");
         require(recoveredAddress == _verifier, "Not signed by iAM");
 
+        verifiedStamps[exampleVC.credentialSubject.id] = exampleVC.credentialSubject.iamHash;
+
         emit Verified(
-            keccak256(bytes(exampleVC.credentialSubject.id)),
-            keccak256(bytes(exampleVC.credentialSubject.iamHash)),
-            keccak256(bytes(exampleVC.credentialSubject.provider))
+            exampleVC.credentialSubject.id,
+            exampleVC.credentialSubject.iamHash,
+            exampleVC.credentialSubject.provider
         );
         return true;
     }
