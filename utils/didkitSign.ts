@@ -5,7 +5,6 @@ const JWK =
   '{"kty":"EC","crv":"secp256k1","x":"PdB2nS-knyAxc6KPuxBr65vRpW-duAXwpeXlwGJ03eU","y":"MwoGZ08hF5uv-_UEC9BKsYdJVSbJNHcFhR1BZWer5RQ","d":"z9VrSNNZXf9ywUx3v_8cLDhSw8-pvAT9qu_WZmqqfWM"}';
 const did = DIDKit.keyToDID("ethr", JWK);
 
-console.log("did", did);
 const credentialInput = {
   type: ["VerifiableCredential"],
   issuer: did,
@@ -26,7 +25,6 @@ const options = {
       name: "Passport",
     },
     types: {
-      Domain: [{ name: "name", type: "string" }],
       Document: [
         {
           type: "string",
@@ -35,10 +33,6 @@ const options = {
         {
           type: "CredentialSubject",
           name: "credentialSubject",
-        },
-        {
-          type: "Domain",
-          name: "domain",
         },
         {
           type: "string",
@@ -110,14 +104,20 @@ async function verifyCredential(prep: any, signed: any) {
   const standardizedTypes = preparedCredential.signingInput.types;
   delete standardizedTypes.EIP712Domain;
 
-  console.log({ preparedCredential, signedCredential, standardizedTypes });
   const signerAddress = ethers.utils.verifyTypedData(
     preparedCredential.proof.eip712Domain.domain,
     standardizedTypes,
     signedCredential,
     signedCredential.proof.proofValue,
   );
-  console.log({ signerAddress });
+
+  const signerIssuedCredential = signerAddress.toLowerCase() === signedCredential.issuer.split(":").pop();
+
+  if (signerIssuedCredential) {
+    console.log("===============");
+    console.log("This credential was signed by the issuer!!!!  ", signerAddress);
+    console.log("===============");
+  }
 }
 
 async function createCredential() {
