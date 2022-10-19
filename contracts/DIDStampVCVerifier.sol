@@ -8,9 +8,9 @@ import { DIDpkhAdapter } from "./DIDpkhAdapter.sol";
 import "hardhat/console.sol";
 
 struct CredentialSubject {
-    string id;
     // underscored since hash is a reserved keyword
     string _hash;
+    string id;
     string provider;
 }
 
@@ -40,9 +40,9 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
 
     bytes32 private constant PROOF_TYPE_HASH = keccak256("Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)");
 
-    bytes32 private constant CREDENTIAL_SUBJECT_TYPEHASH = keccak256("CredentialSubject(string id,string hash,string provider)");
+    bytes32 private constant CREDENTIAL_SUBJECT_TYPEHASH = keccak256("CredentialSubject(string hash,string id,string provider)");
     
-    bytes32 private constant DOCUMENT_TYPEHASH = keccak256("Document(string @context,CredentialSubject credentialSubject,string expirationDate,string issuanceDate,string issuer,Proof proof,string[] type)CredentialSubject(string id,string hash,string provider)Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)");
+    bytes32 private constant DOCUMENT_TYPEHASH = keccak256("Document(string @context,CredentialSubject credentialSubject,string expirationDate,string issuanceDate,string issuer,Proof proof,string[] type)CredentialSubject(string hash,string id,string provider)Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)");
 
     address public _verifier;
 
@@ -59,8 +59,8 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
             keccak256(
                 abi.encode(
                     CREDENTIAL_SUBJECT_TYPEHASH,
-                    keccak256(bytes(subject.id)),
                     keccak256(bytes(subject._hash)),
+                    keccak256(bytes(subject.id)),
                     keccak256(bytes(subject.provider))
                 )
             );

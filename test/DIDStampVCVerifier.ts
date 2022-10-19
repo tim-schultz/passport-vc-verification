@@ -24,7 +24,7 @@ describe.only("StampVCVerifier", function () {
 
     // chainId = (await ethers.provider.getNetwork()).chainId;
   })
-
+// export type { DIDStampVcVerifier, DocumentStruct, CredentialSubjectStruct, ProofStruct } from "./DIDStampVCVerifier.sol/DIDStampVcVerifier";
   it("should verify a didkit issued VC using the DIDStampVcVerifier smart contract", async function () {
     const stampVcVerifierFactory = <DIDStampVcVerifier__factory>await ethers.getContractFactory("DIDStampVcVerifier");
     didStampVCVerifier = <DIDStampVcVerifier>await stampVcVerifierFactory.connect(signer).deploy(domainName, signer.address);
@@ -34,6 +34,8 @@ describe.only("StampVCVerifier", function () {
     const { v, r, s } = ethers.utils.splitSignature(DIDKitSignedCredential.proof.proofValue);
 
     const normalizedDIDCredential = normalizeDIDCredential(DIDKitSignedCredential) as DocumentStruct;
+
+    console.log({ normalizedDIDCredential })
 
     await didStampVCVerifier.connect(submitter).verifyStampVc(normalizedDIDCredential, v, r, s);
   });
