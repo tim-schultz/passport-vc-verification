@@ -1,8 +1,8 @@
 // import { createCredential } from "../utils/didkitSign"
 import { ethers } from "hardhat";
 import { expect } from "chai";
-
-import { DIDStampVcVerifier, DIDStampVcVerifier__factory, DocumentStruct } from "../src/types";
+import { DocumentStruct } from "../types"
+import { DIDStampVcVerifier, DIDStampVcVerifier__factory } from "../src/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 const domainName = "Passport";
@@ -14,7 +14,6 @@ import { normalizeDIDCredential } from "../utils/normalizeDIDCredential";
 describe.only("DIDStampVCVerifier", function () {
   let signer: SignerWithAddress;
   let submitter: SignerWithAddress;
-  // let chainId: number;
   let didStampVCVerifier: DIDStampVcVerifier;
 
   beforeEach(async function () {
@@ -33,11 +32,9 @@ describe.only("DIDStampVCVerifier", function () {
 
     const normalizedDIDCredential = normalizeDIDCredential(DIDKitSignedCredential) as DocumentStruct;
 
-    console.log({ normalizedDIDCredential, v, r, s })
-
     await expect(await didStampVCVerifier.connect(submitter).verifyStampVc(normalizedDIDCredential, v, r, s)).to.emit(
       didStampVCVerifier,
       "Verified",
-    );;
+    );
   });
 })

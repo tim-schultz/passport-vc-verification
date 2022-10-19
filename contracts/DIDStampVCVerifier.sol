@@ -5,8 +5,6 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { VcVerifier } from "./VCVerifier.sol";
 import { DIDpkhAdapter } from "./DIDpkhAdapter.sol";
 
-import "hardhat/console.sol";
-
 struct CredentialSubject {
     // underscored since hash is a reserved keyword
     string _hash;
@@ -111,12 +109,10 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
 
         address issuerAddress = DIDpkhAdapter.pseudoResolveDidIssuer(document.issuer);
 
-        // Here we could check the issuer's address against an on-chain registry.
-
         address recoveredAddress = ECDSA.recover(digest, v, r, s);
 
-        console.log("Recovered address: %s", recoveredAddress);
-        console.log("issuerAddress: %s", issuerAddress);
+        // Here we could check the issuer's address against an on-chain registry.
+        // We could provide a verifying contract address when signing the credential which could correspond to this contract
         require(recoveredAddress == issuerAddress, "VC verification failed issuer does not match signature");
 
         verifiedStamps[document.credentialSubject.id] = document.credentialSubject._hash;
