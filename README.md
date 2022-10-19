@@ -1,22 +1,16 @@
-# EIP-712 Verifiable Credentials
-
-## Slightly modified version of https://github.com/ra-phael/eip712-vc 🙌
+# EIP-712 Verifiable Credentials verification of credentials issued by https://github.com/spruceid/didkit
 
 This is a simple example of how Verifiable Credentials can be verified on-chain.
 
 It is based on the [EIP-712 standard for typed structured data hashing and signing ](https://eips.ethereum.org/EIPS/eip-712) and [Ethereum EIP712 Signature 2021](https://w3c-ccg.github.io/ethereum-eip712-signature-2021-spec/).
 
-The VC used is very basic and minimal, more properties such as id could be added. The basis for this example VC ("DaoVc") is defined in `mocks > exampleDocument.json`. The credential subject is simply:
 
-```json
-"credentialSubject": {
-    id: string;
-    iamHash: string;
-    provider: string;
-  }
-```
+### Sign and Verify didkit credential using Javascript
+`yarn ts-node utils/didkitSign.ts` this will sign and generate types for a Verifiable Credential using [DIDKit](https://github.com/spruceid/didkit)
 
-On chain verification of
+### On chain verification
+[DIDStampVCVerifier](contracts/DIDStampVCVerifier.sol) - On chain verification that the signer of the provided credential is the issuer
+[Test](test/DIDStampVCVerifier.ts) - Verify that signed credential is valid and signed by issuer
 
 ### Pre Requisites
 
@@ -29,88 +23,7 @@ Then, proceed with installing dependencies:
 $ yarn install
 ```
 
-Then run
-
-```
-npx hardhat present
-```
-
-First, this will deploy the smart contracts locally and generate a serialized Verifiable Credential, which is signed by the private key provided as environment variable and looks like this:
-
-```
-{
-  "credentialSubject": {
-    "id": "did:pkh:eip155:1:0xe4c81FCb008E04C9bc5AD607f0cb14E4AC07896d",
-    "iamHash": "v0.0.0:k4jNBdi0jv09I+gYEtRvd8w9XlJwnN3ivilkun4c81g=",
-    "provider": "Google"
-  },
-  "issuer": "did:pkh:eip155:1:0x7A67063c391F266D31eA6c9eC7C788c1323B7746",
-  "issuanceDate": "2022-10-05T03:00:26.063Z",
-  "_context": [
-    "https://www.w3.org/2018/credentials/v1",
-    "https://schema.org",
-    "https://w3id.org/security/v2"
-  ],
-  "_type": [
-    "VerifiableCredential"
-  ],
-  "proof": {
-    "created": "2022-10-05T03:00:26.063Z",
-    "eip712": {
-      "domain": {
-        "name": "stamp-vc-verifier-test"
-      },
-      "primaryType": "StampVc",
-      "types": {
-        "StampVc": [
-          {
-            "name": "_context",
-            "type": "string[]"
-          },
-          {
-            "name": "_type",
-            "type": "string[]"
-          },
-          {
-            "name": "issuer",
-            "type": "string"
-          },
-          {
-            "name": "issuanceDate",
-            "type": "string"
-          },
-          {
-            "name": "credentialSubject",
-            "type": "Stamp"
-          }
-        ],
-        "Stamp": [
-          {
-            "name": "id",
-            "type": "string"
-          },
-          {
-            "name": "iamHash",
-            "type": "string"
-          },
-          {
-            "name": "provider",
-            "type": "string"
-          }
-        ]
-      }
-    },
-    "proofPurpose": "assertionMethod",
-    "proofValue": {
-      "v": 27,
-      "r": "0x7e2eb0cc688dc3b1eb7ea04de9fe8cbc2733418d7c8fa7422868b77cccbde0d0",
-      "s": "0x03fb27f913557a561c139d903e6945452041067e8d10e869d9b3a227c802e5bd"
-    },
-    "type": "EthereumEip712Signature2021",
-    "verificationMethod": "did:pkh:eip155:1:0x7A67063c391F266D31eA6c9eC7C788c1323B7746#blockchainAccountId"
-  }
-}
-```
+Populate `.env` file with at least `INFURA_API_KEY`
 
 ### Some remarks
 
@@ -216,3 +129,7 @@ $ yarn clean
 ## Syntax Highlighting
 
 If you use VSCode, you can get Solidity syntax highlighting via the [vscode-solidity](https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity) extension.
+
+
+
+## Hugely influenced by https://github.com/ra-phael/eip712-vc 🙌
