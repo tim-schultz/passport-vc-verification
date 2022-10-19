@@ -11,7 +11,7 @@ import DIDKitSignedCredential from "../mocks/DIDKitSignedCredential.json";
 
 import { normalizeDIDCredential } from "../utils/normalizeDIDCredential";
 
-describe.only("DIDStampVCVerifier", function () {
+describe("DIDStampVCVerifier", function () {
   let signer: SignerWithAddress;
   let submitter: SignerWithAddress;
   let didStampVCVerifier: DIDStampVcVerifier;
