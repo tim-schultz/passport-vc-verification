@@ -6,8 +6,6 @@ import passportDocument from "../mocks/passportCredential.json";
 import { StampVcVerifier, StampVcVerifier__factory } from "../src/types";
 import { getSerializedSignedVC } from "../utils/sign";
 
-import { prepareCredential } from "../utils/didkitSign";
-
 task("present", "Present a VC that gets verified on-chain", async (_taskArgs, hre) => {
   const domainName = "stamp-vc-verifier-test";
   const chainId = hre.network.config.chainId;

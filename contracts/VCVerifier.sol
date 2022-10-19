@@ -12,7 +12,7 @@ struct EIP712Domain {
 
 contract VcVerifier {
     bytes32 private constant EIP712DOMAIN_TYPEHASH =
-        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+        keccak256("EIP712Domain(string name)");
 
     // Domain Separator, as defined by EIP-712 (`hashstruct(eip712Domain)`)
     bytes32 public DOMAIN_SEPARATOR;
@@ -30,10 +30,7 @@ contract VcVerifier {
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
                 EIP712DOMAIN_TYPEHASH,
-                keccak256(bytes(eip712Domain.name)),
-                keccak256(bytes(eip712Domain.version)),
-                eip712Domain.chainId,
-                eip712Domain.verifyingContract
+                keccak256(bytes(eip712Domain.name))
             )
         );
     }

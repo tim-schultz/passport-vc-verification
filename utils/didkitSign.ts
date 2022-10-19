@@ -117,10 +117,14 @@ async function verifyCredential(prep: any, signed: any) {
     console.log("===============");
     console.log("This credential was signed by the issuer!!!!  ", signerAddress);
     console.log("===============");
+
+
+    const splitSignature = ethers.utils.splitSignature(signedCredential.proof.proofValue);
+    return splitSignature;
   }
 }
 
-async function createCredential() {
+export async function createCredential() {
   const preparedCredential = await DIDKit.prepareIssueCredential(
     JSON.stringify(credentialInput, undefined, 2),
     JSON.stringify(options, undefined, 2),
@@ -142,7 +146,13 @@ async function createCredential() {
   console.log("===============");
   console.log(issuedCredential);
   console.log("!!!!!!=============== sending to verify");
-  await verifyCredential(preparedCredential, issuedCredential);
+  const splitSignature = await verifyCredential(preparedCredential, issuedCredential);
+
+  return {
+    splitSignature,
+    issuedCredential: JSON.parse(issuedCredential),
+    preparedCredential: JSON.parse(preparedCredential),
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

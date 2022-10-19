@@ -7,6 +7,11 @@ contract DIDpkhAdapter {
         return parseAddress(substring(issuer, 17, 59));
     }
 
+    function pseudoResolveDidIssuer(string calldata issuer) public pure returns (address) {
+        // remove the prefixes and only keep the identifier part (i.e the eth address)
+        return parseAddress(substring(issuer, 9, 51));
+    }
+
     function substring(
         string memory str,
         uint256 startIndex,

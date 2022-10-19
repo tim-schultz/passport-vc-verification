@@ -1,6 +1,5 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ContractTransaction } from "ethers";
 import { ethers } from "hardhat";
 
 import passportDocument from "../mocks/passportCredential.json";
