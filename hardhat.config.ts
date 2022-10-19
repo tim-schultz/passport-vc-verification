@@ -7,7 +7,6 @@ import { resolve } from "path";
 import "./tasks/accounts";
 import "./tasks/didpkh";
 import "./tasks/issue";
-import "./tasks/present";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
