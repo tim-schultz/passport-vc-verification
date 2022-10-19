@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "hardhat/console.sol";
-
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 struct EIP712Domain {
@@ -21,7 +19,6 @@ contract VcVerifier {
         EIP712Domain memory eip712Domain = EIP712Domain({
             name: domainName
         });
-        console.log(eip712Domain.name, "eip712Domain.name");
 
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(
