@@ -1,4 +1,4 @@
-# EIP-712 Verifiable Credentials verification of credentials issued by https://github.com/spruceid/didkit
+# EIP-712 verification of Verifiable Credentials issued by https://github.com/spruceid/didkit
 
 This is a simple example of how Verifiable Credentials can be verified on-chain.
 
