@@ -9,7 +9,7 @@ It is based on the [EIP-712 standard for typed structured data hashing and signi
 `yarn ts-node utils/didkitSign.ts` this will sign and generate types for a Verifiable Credential using [DIDKit](https://github.com/spruceid/didkit)
 
 ### On chain verification
-[DIDStampVCVerifier](contracts/DIDStampVCVerifier.sol) - On chain verification that the signer of the provided credential is the issuer
+[DIDStampVCVerifier](contracts/DIDStampVCVerifier.sol) - On chain verification that the signer of the provided credential is the issuer. 
 [Test](test/DIDStampVCVerifier.ts) - Verify that signed credential is valid and signed by issuer
 
 ### Pre Requisites
