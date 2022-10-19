@@ -1,17 +1,17 @@
 // import { createCredential } from "../utils/didkitSign"
 import { ethers } from "hardhat";
+import { expect } from "chai";
 
 import { DIDStampVcVerifier, DIDStampVcVerifier__factory, DocumentStruct } from "../src/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-const domainName = "stamp-vc-verifier-test";
+const domainName = "Passport";
 
 import DIDKitSignedCredential from "../mocks/DIDKitSignedCredential.json";
-// import DIDKitPreparedCredential from "../mocks/DIDKitPreparedCredential.json";
 
 import { normalizeDIDCredential } from "../utils/normalizeDIDCredential";
 
-describe.only("StampVCVerifier", function () {
+describe.only("DIDStampVCVerifier", function () {
   let signer: SignerWithAddress;
   let submitter: SignerWithAddress;
   // let chainId: number;
@@ -21,10 +21,8 @@ describe.only("StampVCVerifier", function () {
     const signers = await ethers.getSigners();
     signer = signers[0];
     submitter = signers[1];
-
-    // chainId = (await ethers.provider.getNetwork()).chainId;
   })
-// export type { DIDStampVcVerifier, DocumentStruct, CredentialSubjectStruct, ProofStruct } from "./DIDStampVCVerifier.sol/DIDStampVcVerifier";
+
   it("should verify a didkit issued VC using the DIDStampVcVerifier smart contract", async function () {
     const stampVcVerifierFactory = <DIDStampVcVerifier__factory>await ethers.getContractFactory("DIDStampVcVerifier");
     didStampVCVerifier = <DIDStampVcVerifier>await stampVcVerifierFactory.connect(signer).deploy(domainName, signer.address);
@@ -35,8 +33,11 @@ describe.only("StampVCVerifier", function () {
 
     const normalizedDIDCredential = normalizeDIDCredential(DIDKitSignedCredential) as DocumentStruct;
 
-    console.log({ normalizedDIDCredential })
+    console.log({ normalizedDIDCredential, v, r, s })
 
-    await didStampVCVerifier.connect(submitter).verifyStampVc(normalizedDIDCredential, v, r, s);
+    await expect(await didStampVCVerifier.connect(submitter).verifyStampVc(normalizedDIDCredential, v, r, s)).to.emit(
+      didStampVCVerifier,
+      "Verified",
+    );;
   });
 })

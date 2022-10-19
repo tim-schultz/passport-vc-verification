@@ -1,18 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
+import "hardhat/console.sol";
+
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 struct EIP712Domain {
     string name;
-    string version;
-    uint256 chainId;
-    address verifyingContract;
 }
 
 contract VcVerifier {
-    bytes32 private constant EIP712DOMAIN_TYPEHASH =
-        keccak256("EIP712Domain(string name)");
+    bytes32 private constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name)");
 
     // Domain Separator, as defined by EIP-712 (`hashstruct(eip712Domain)`)
     bytes32 public DOMAIN_SEPARATOR;
@@ -21,11 +19,9 @@ contract VcVerifier {
         // The EIP712Domain shares the same name for all ERC128Approval contracts
         // but the unique address of this contract as `verifiyingContract`
         EIP712Domain memory eip712Domain = EIP712Domain({
-            name: domainName,
-            version: "1",
-            chainId: block.chainid,
-            verifyingContract: address(0)
+            name: domainName
         });
+        console.log(eip712Domain.name, "eip712Domain.name");
 
         DOMAIN_SEPARATOR = keccak256(
             abi.encode(

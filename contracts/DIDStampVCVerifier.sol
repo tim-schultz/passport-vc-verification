@@ -118,7 +118,6 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
         console.log("Recovered address: %s", recoveredAddress);
         console.log("issuerAddress: %s", issuerAddress);
         require(recoveredAddress == issuerAddress, "VC verification failed issuer does not match signature");
-        require(recoveredAddress == _verifier, "Not signed by iAM");
 
         verifiedStamps[document.credentialSubject.id] = document.credentialSubject._hash;
 
