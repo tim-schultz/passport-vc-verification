@@ -5,11 +5,17 @@ import { DocumentStruct } from "../types"
 import { DIDStampVcVerifier, DIDStampVcVerifier__factory } from "../src/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
+import { ChildNodes, SparseMerkleTree } from "@zk-kit/sparse-merkle-tree"
+import sha256 from "crypto-js/sha256"
+
 const domainName = "Passport";
 
 import DIDKitSignedCredential from "../mocks/DIDKitSignedCredential.json";
 
 import { normalizeDIDCredential } from "../utils/normalizeDIDCredential";
+
+const hash = (childNodes: ChildNodes) => sha256(childNodes.join("")).toString()
+const tree = new SparseMerkleTree(hash)
 
 describe("DIDStampVCVerifier", function () {
   let signer: SignerWithAddress;
@@ -32,9 +38,11 @@ describe("DIDStampVCVerifier", function () {
 
     const normalizedDIDCredential = normalizeDIDCredential(DIDKitSignedCredential) as DocumentStruct;
 
+    const { id, _hash, provider } = normalizedDIDCredential.credentialSubject;
+
     await expect(await didStampVCVerifier.connect(submitter).verifyStampVc(normalizedDIDCredential, v, r, s)).to.emit(
       didStampVCVerifier,
       "Verified",
-    );
+    ).withArgs(id, _hash, provider);
   });
 })

@@ -9,12 +9,12 @@
     "lib": ["es6"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "noImplicitAny": true,
     "removeComments": true,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "strict": true,
-    "target": "es6"
+    "strict": false,
+    "target": "es6",
+    "allowJs": true
   },
   "exclude": ["node_modules"],
   "files": ["./hardhat.config.ts"],
