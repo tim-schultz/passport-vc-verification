@@ -33,22 +33,7 @@ Populate `.env` file with at least `INFURA_API_KEY`
 
 <br/>
 
-Then, the content of the whole VC (minus the proof object) and the signature attached to it is verified on-chain against the Ethereum address in `issuer`. This is done by calling `verifyDaoVc()`. If the verification is successful you should see:
-
-```
-Verification passed on-chain?  true
-Gas cost:  83550
-```
-
-As shown above, the verification consumes 83,550 gas.
-The following table gives an estimate of the cost in dollars on Ethereum Mainnet, based on different gas prices:
-
-| Gas price (gwei) | Cost ($) |
-| ---------------- | -------- |
-| 5                | $0.66    |
-| 10               | $1.32    |
-| 20               | $2.64    |
-| 30               | $3.96    |
+Then, the content of the whole VC (minus the proof object) and the signature attached to it is verified on-chain against the Ethereum address in `issuer`. This is done by calling `verifyStampVc()`. If the verification is successful you should see:
 
 <br/>
 
