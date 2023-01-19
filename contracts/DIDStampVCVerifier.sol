@@ -4,6 +4,7 @@ pragma solidity >=0.8.4;
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { VcVerifier } from "./VCVerifier.sol";
 import { DIDpkhAdapter } from "./DIDpkhAdapter.sol";
+import { AttestationStation } from "./AttestationStation.sol";
 
 struct CredentialSubject {
     // underscored since hash is a reserved keyword
@@ -35,21 +36,29 @@ struct Document {
 }
 
 contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
+    bytes32 private constant PROOF_TYPE_HASH =
+        keccak256("Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)");
 
-    bytes32 private constant PROOF_TYPE_HASH = keccak256("Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)");
+    bytes32 private constant CREDENTIAL_SUBJECT_TYPEHASH =
+        keccak256("CredentialSubject(string hash,string id,string provider)");
 
-    bytes32 private constant CREDENTIAL_SUBJECT_TYPEHASH = keccak256("CredentialSubject(string hash,string id,string provider)");
-    
-    bytes32 private constant DOCUMENT_TYPEHASH = keccak256("Document(string @context,CredentialSubject credentialSubject,string expirationDate,string issuanceDate,string issuer,Proof proof,string[] type)CredentialSubject(string hash,string id,string provider)Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)");
+    bytes32 private constant DOCUMENT_TYPEHASH =
+        keccak256(
+            "Document(string @context,CredentialSubject credentialSubject,string expirationDate,string issuanceDate,string issuer,Proof proof,string[] type)CredentialSubject(string hash,string id,string provider)Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)"
+        );
 
     address public _verifier;
+    address public _attestationStation;
+
+    AttestationStation.AttestationData[] public _attestations;
 
     event Verified(string indexed id, string iamHash, string provider);
 
     mapping(string => string) public verifiedStamps;
 
-    constructor(string memory domainName, address verifier) VcVerifier(domainName) {
+    constructor(string memory domainName, address verifier, address attestationStation) VcVerifier(domainName) {
         _verifier = verifier;
+        _attestationStation = attestationStation;
     }
 
     function hashCredentialSubject(CredentialSubject calldata subject) public pure returns (bytes32) {
@@ -97,15 +106,9 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
             );
     }
 
-    function verifyStampVc(
-        Document calldata document,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public returns (bool) {
+    function verifyStampVc(Document calldata document, uint8 v, bytes32 r, bytes32 s) public returns (bool) {
         bytes32 vcHash = hashDocument(document);
         bytes32 digest = ECDSA.toTypedDataHash(DOMAIN_SEPARATOR, vcHash);
-
 
         address issuerAddress = DIDpkhAdapter.pseudoResolveDidIssuer(document.issuer);
 
@@ -122,6 +125,16 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
             document.credentialSubject._hash,
             document.credentialSubject.provider
         );
+
+        AttestationStation attestationStation = AttestationStation(_attestationStation);
+        AttestationStation.AttestationData memory attestation = AttestationStation.AttestationData(
+            msg.sender,
+            "Verified",
+            "yes"
+        );
+        _attestations.push(attestation);
+
+        attestationStation.attest(_attestations);
         return true;
     }
 }

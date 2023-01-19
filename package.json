@@ -90,6 +90,7 @@
   },
   "dependencies": {
     "@spruceid/didkit": "^0.3.0-beta.3",
-    "@spruceid/didkit-wasm-node": "^0.2.1"
+    "@spruceid/didkit-wasm-node": "^0.2.1",
+    "hardhat-console": "^1.0.0"
   }
 }
