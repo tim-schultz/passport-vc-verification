@@ -10,7 +10,7 @@ struct CredentialSubject {
     // underscored since hash is a reserved keyword
     string _hash;
     string id;
-    string provider;
+    string[] provider;
 }
 
 struct Proof {
@@ -40,7 +40,7 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
         keccak256("Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)");
 
     bytes32 private constant CREDENTIAL_SUBJECT_TYPEHASH =
-        keccak256("CredentialSubject(string hash,string id,string provider)");
+        keccak256("CredentialSubject(string hash,string id,string[] provider)");
 
     bytes32 private constant DOCUMENT_TYPEHASH =
         keccak256(
@@ -52,7 +52,7 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
 
     AttestationStation.AttestationData[] public _attestations;
 
-    event Verified(string indexed id, string iamHash, string provider);
+    event Verified(string indexed id, string iamHash);
 
     mapping(string => string) public verifiedStamps;
 
@@ -68,7 +68,7 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
                     CREDENTIAL_SUBJECT_TYPEHASH,
                     keccak256(bytes(subject._hash)),
                     keccak256(bytes(subject.id)),
-                    keccak256(bytes(subject.provider))
+                    _hashArray(subject.provider)
                 )
             );
     }
@@ -120,11 +120,7 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
 
         verifiedStamps[document.credentialSubject.id] = document.credentialSubject._hash;
 
-        emit Verified(
-            document.credentialSubject.id,
-            document.credentialSubject._hash,
-            document.credentialSubject.provider
-        );
+        emit Verified(document.credentialSubject.id, document.credentialSubject._hash);
 
         AttestationStation attestationStation = AttestationStation(_attestationStation);
         AttestationStation.AttestationData memory attestation = AttestationStation.AttestationData(

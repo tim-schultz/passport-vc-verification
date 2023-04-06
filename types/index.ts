@@ -23,7 +23,7 @@ export type ProofStruct = {
 export type CredentialSubjectStruct = {
   _hash: PromiseOrValue<string>;
   id: PromiseOrValue<string>;
-  provider: PromiseOrValue<string>;
+  provider: PromiseOrValue<string[]>;
 };
 
 export type DocumentStruct = {

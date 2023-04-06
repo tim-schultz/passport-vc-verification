@@ -14,7 +14,7 @@ const credentialInput = {
   credentialSubject: {
     id: "did:pkh:eip155:1:0x12FeD9f987bc340c6bE43fD80aD641E8cD740682",
     hash: "v0.0.0:AjcRjxx7Hp3PKPSNwPeBJjR21pLyA14CVeQ1XijzxUc=",
-    provider: "Twitter",
+    provider: ["Twitter", "Facebook", "Google"],
   },
 };
 
@@ -87,7 +87,7 @@ const options = {
           name: "id",
         },
         {
-          type: "string",
+          type: "string[]",
           name: "provider",
         },
       ],
@@ -117,7 +117,6 @@ async function verifyCredential(prep: any, signed: any) {
     console.log("===============");
     console.log("This credential was signed by the issuer!!!!  ", signerAddress);
     console.log("===============");
-
 
     const splitSignature = ethers.utils.splitSignature(signedCredential.proof.proofValue);
     return splitSignature;
@@ -152,7 +151,7 @@ export async function createCredential() {
     splitSignature,
     issuedCredential: JSON.parse(issuedCredential),
     preparedCredential: JSON.parse(preparedCredential),
-  }
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

@@ -1,7 +1,8 @@
-import { DocumentStruct, CredentialSubjectStruct, ProofStruct } from "../types";
+import { CredentialSubjectStruct, DocumentStruct, ProofStruct } from "../types";
+
 export interface DIDCredential {
-  '@context': string;
-  type?: (string)[] | null;
+  "@context": string;
+  type?: string[] | null;
   credentialSubject: CredentialSubject;
   issuer: string;
   issuanceDate: string;
@@ -10,11 +11,11 @@ export interface DIDCredential {
 }
 export interface CredentialSubject {
   id: string;
-  provider: string;
+  provider: string[];
   hash: string;
 }
 export interface Proof {
-  '@context': string;
+  "@context": string;
   type: string;
   proofPurpose: string;
   proofValue: string;
@@ -31,16 +32,15 @@ export interface Domain {
   name: string;
 }
 export interface Types {
-  CredentialSubject?: (CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity)[] | null;
-  Document?: (CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity)[] | null;
-  EIP712Domain?: (CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity)[] | null;
-  Proof?: (CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity)[] | null;
+  CredentialSubject?: CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity[] | null;
+  Document?: CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity[] | null;
+  EIP712Domain?: CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity[] | null;
+  Proof?: CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity[] | null;
 }
 export interface CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity {
   name: string;
   type: string;
 }
-
 
 // TODO: This is a temporary solution to get the types for the contract.
 export const normalizeDIDCredential = (credential: DIDCredential) => {
@@ -48,26 +48,26 @@ export const normalizeDIDCredential = (credential: DIDCredential) => {
   const normalizedSubject = {} as CredentialSubjectStruct;
   const normalizedProof = {} as ProofStruct;
 
-  normalizedSubject['id'] = credential.credentialSubject.id;
-  normalizedSubject['provider'] = credential.credentialSubject.provider;
-  normalizedSubject['_hash'] = credential.credentialSubject.hash;
+  normalizedSubject["id"] = credential.credentialSubject.id;
+  normalizedSubject["provider"] = credential.credentialSubject.provider;
+  normalizedSubject["_hash"] = credential.credentialSubject.hash;
 
-  normalizedProof['_context'] = credential.proof['@context'];
-  normalizedProof['created'] = credential.proof.created;
-  normalizedProof['proofPurpose'] = credential.proof.proofPurpose;
-  normalizedProof['_type'] = credential.proof.type;
-  normalizedProof['verificationMethod'] = credential.proof.verificationMethod;
+  normalizedProof["_context"] = credential.proof["@context"];
+  normalizedProof["created"] = credential.proof.created;
+  normalizedProof["proofPurpose"] = credential.proof.proofPurpose;
+  normalizedProof["_type"] = credential.proof.type;
+  normalizedProof["verificationMethod"] = credential.proof.verificationMethod;
 
-  normalizedCredential['_context'] = credential['@context'];
-  normalizedCredential['credentialSubject'] = normalizedSubject;
-  normalizedCredential['expirationDate'] = credential.expirationDate;
-  normalizedCredential['issuanceDate'] = credential.issuanceDate;
-  normalizedCredential['issuer'] = credential.issuer;
-  normalizedCredential['proof'] = normalizedProof;
+  normalizedCredential["_context"] = credential["@context"];
+  normalizedCredential["credentialSubject"] = normalizedSubject;
+  normalizedCredential["expirationDate"] = credential.expirationDate;
+  normalizedCredential["issuanceDate"] = credential.issuanceDate;
+  normalizedCredential["issuer"] = credential.issuer;
+  normalizedCredential["proof"] = normalizedProof;
 
   if (credential.type) {
-    normalizedCredential['_type'] = credential.type;
+    normalizedCredential["_type"] = credential.type;
   }
-  
+
   return normalizedCredential;
 };
