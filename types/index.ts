@@ -29,7 +29,7 @@ export type CredentialSubjectStruct = {
   _hash: PromiseOrValue<string>;
   id: PromiseOrValue<string>;
   provider: PromiseOrValue<string>;
-  context: ContextStruct;
+  _context: ContextStruct;
 };
 
 export type DocumentStruct = {
