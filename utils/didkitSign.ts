@@ -112,12 +112,10 @@ async function verifyCredential(prep: any, signed: any) {
   );
 
   const signerIssuedCredential = signerAddress.toLowerCase() === signedCredential.issuer.split(":").pop();
-
   if (signerIssuedCredential) {
     console.log("===============");
     console.log("This credential was signed by the issuer!!!!  ", signerAddress);
     console.log("===============");
-
 
     const splitSignature = ethers.utils.splitSignature(signedCredential.proof.proofValue);
     return splitSignature;
@@ -152,7 +150,7 @@ export async function createCredential() {
     splitSignature,
     issuedCredential: JSON.parse(issuedCredential),
     preparedCredential: JSON.parse(preparedCredential),
-  }
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

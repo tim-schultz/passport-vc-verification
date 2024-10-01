@@ -1,7 +1,8 @@
-import { DocumentStruct, CredentialSubjectStruct, ProofStruct } from "../types";
+import { CredentialSubjectStruct, DocumentStruct, ProofStruct } from "../types";
+
 export interface DIDCredential {
-  '@context': string;
-  type?: (string)[] | null;
+  "@context": string[];
+  type?: string[] | null;
   credentialSubject: CredentialSubject;
   issuer: string;
   issuanceDate: string;
@@ -12,9 +13,13 @@ export interface CredentialSubject {
   id: string;
   provider: string;
   hash: string;
+  "@context": {
+    hash: string;
+    provider: string;
+  };
 }
 export interface Proof {
-  '@context': string;
+  "@context": string;
   type: string;
   proofPurpose: string;
   proofValue: string;
@@ -31,43 +36,49 @@ export interface Domain {
   name: string;
 }
 export interface Types {
-  CredentialSubject?: (CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity)[] | null;
-  Document?: (CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity)[] | null;
-  EIP712Domain?: (CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity)[] | null;
-  Proof?: (CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity)[] | null;
+  CredentialSubject?: CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity[] | null;
+  Document?: CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity[] | null;
+  EIP712Domain?: CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity[] | null;
+  Proof?: CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity[] | null;
 }
 export interface CredentialSubjectEntityOrDocumentEntityOrEIP712DomainEntityOrProofEntity {
   name: string;
   type: string;
 }
 
+export const normalizeDIDCredential = (credential: DIDCredential): DocumentStruct => {
+  const transformKeys = (obj: any): any => {
+    if (Array.isArray(obj)) {
+      return obj.map(transformKeys);
+    }
 
-// TODO: This is a temporary solution to get the types for the contract.
-export const normalizeDIDCredential = (credential: DIDCredential) => {
-  const normalizedCredential = {} as DocumentStruct;
-  const normalizedSubject = {} as CredentialSubjectStruct;
-  const normalizedProof = {} as ProofStruct;
+    if (typeof obj !== "object" || obj === null) {
+      return obj;
+    }
 
-  normalizedSubject['id'] = credential.credentialSubject.id;
-  normalizedSubject['provider'] = credential.credentialSubject.provider;
-  normalizedSubject['_hash'] = credential.credentialSubject.hash;
+    const transformed: any = {};
 
-  normalizedProof['_context'] = credential.proof['@context'];
-  normalizedProof['created'] = credential.proof.created;
-  normalizedProof['proofPurpose'] = credential.proof.proofPurpose;
-  normalizedProof['_type'] = credential.proof.type;
-  normalizedProof['verificationMethod'] = credential.proof.verificationMethod;
+    for (const [key, value] of Object.entries(obj)) {
+      let newKey = key;
+      let newValue = value;
 
-  normalizedCredential['_context'] = credential['@context'];
-  normalizedCredential['credentialSubject'] = normalizedSubject;
-  normalizedCredential['expirationDate'] = credential.expirationDate;
-  normalizedCredential['issuanceDate'] = credential.issuanceDate;
-  normalizedCredential['issuer'] = credential.issuer;
-  normalizedCredential['proof'] = normalizedProof;
+      switch (key) {
+        case "@context":
+          newKey = "_context";
+          break;
+        case "hash":
+          newKey = "_hash";
+          break;
+        case "type":
+          newKey = "_type";
+          break;
+      }
 
-  if (credential.type) {
-    normalizedCredential['_type'] = credential.type;
-  }
-  
-  return normalizedCredential;
+      transformed[newKey] = transformKeys(newValue);
+    }
+
+    return transformed;
+  };
+
+  return transformKeys({ ...credential });
 };

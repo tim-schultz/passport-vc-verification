@@ -1,6 +1,7 @@
 // import { createCredential } from "../utils/didkitSign"
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
+import { debug } from "console";
 import { ethers } from "hardhat";
 
 import DIDKitSignedCredential from "../mocks/DIDKitSignedCredential.json";
@@ -40,8 +41,8 @@ describe("DIDStampVCVerifier", function () {
     await didStampVCVerifier.deployed();
 
     const { v, r, s } = ethers.utils.splitSignature(DIDKitSignedCredential.proof.proofValue);
-
-    const normalizedDIDCredential = normalizeDIDCredential(DIDKitSignedCredential) as DocumentStruct;
+    const normalizedDIDCredential = normalizeDIDCredential(DIDKitSignedCredential);
+    console.log(JSON.stringify(normalizedDIDCredential, null, 2));
 
     await expect(await didStampVCVerifier.connect(submitter).verifyStampVc(normalizedDIDCredential, v, r, s)).to.emit(
       didStampVCVerifier,
@@ -69,7 +70,8 @@ describe("DIDStampVCVerifier", function () {
     const { v, r, s } = ethers.utils.splitSignature(DIDKitSignedCredential.proof.proofValue);
 
     const normalizedDIDCredential = normalizeDIDCredential(DIDKitSignedCredential) as DocumentStruct;
-
+    // @ts-ignore
+    delete normalizedDIDCredential.proof.eip712Domain;
     await expect(await didStampVCVerifier.connect(submitter).verifyStampVc(normalizedDIDCredential, v, r, s)).to.emit(
       attestationStation,
       "AttestationCreated",

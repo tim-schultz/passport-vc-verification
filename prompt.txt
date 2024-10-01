@@ -1,0 +1,1 @@
+update utils/normalizeDIDCredential.ts so that it applies the same logic to objects that are nested deeper

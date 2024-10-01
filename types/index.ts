@@ -20,14 +20,20 @@ export type ProofStruct = {
   verificationMethod: PromiseOrValue<string>;
 };
 
+export type ContextStruct = {
+  _hash: PromiseOrValue<string>;
+  provider: PromiseOrValue<string>;
+};
+
 export type CredentialSubjectStruct = {
   _hash: PromiseOrValue<string>;
   id: PromiseOrValue<string>;
   provider: PromiseOrValue<string>;
+  context: ContextStruct;
 };
 
 export type DocumentStruct = {
-  _context: PromiseOrValue<string>;
+  _context: PromiseOrValue<string>[];
   credentialSubject: CredentialSubjectStruct;
   expirationDate: PromiseOrValue<string>;
   issuanceDate: PromiseOrValue<string>;

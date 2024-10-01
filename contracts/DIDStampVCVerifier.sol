@@ -5,9 +5,15 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { VcVerifier } from "./VCVerifier.sol";
 import { DIDpkhAdapter } from "./DIDpkhAdapter.sol";
 import { AttestationStation } from "./AttestationStation.sol";
+import "hardhat/console.sol";
+
+struct Context {
+    string _hash;
+    string provider;
+}
 
 struct CredentialSubject {
-    // underscored since hash is a reserved keyword
+    Context _context;
     string _hash;
     string id;
     string provider;
@@ -24,14 +30,12 @@ struct Proof {
 }
 
 struct Document {
-    // underscored since @ is not valid for struct member
-    string _context;
+    string[] _context;
     CredentialSubject credentialSubject;
     string expirationDate;
     string issuanceDate;
     string issuer;
     Proof proof;
-    // underscored since @ is not valid for struct member
     string[] _type;
 }
 
@@ -39,12 +43,16 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
     bytes32 private constant PROOF_TYPE_HASH =
         keccak256("Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)");
 
+    bytes32 private constant CONTEXT_TYPEHASH = keccak256("Context(string _hash,string provider)");
+
     bytes32 private constant CREDENTIAL_SUBJECT_TYPEHASH =
-        keccak256("CredentialSubject(string hash,string id,string provider)");
+        keccak256(
+            "CredentialSubject(@context @context,string hash,string id,string provider)Context(string hash,string provider)"
+        );
 
     bytes32 private constant DOCUMENT_TYPEHASH =
         keccak256(
-            "Document(string @context,CredentialSubject credentialSubject,string expirationDate,string issuanceDate,string issuer,Proof proof,string[] type)CredentialSubject(string hash,string id,string provider)Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)"
+            "Document(string[] @context,CredentialSubject credentialSubject,string expirationDate,string issuanceDate,string issuer,Proof proof,string[] type)CredentialSubject(@context @context,string hash,string id,string provider)@context(string hash,string provider)Proof(string @context,string created,string proofPurpose,string type,string verificationMethod)"
         );
 
     address public _verifier;
@@ -61,11 +69,19 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
         _attestationStation = attestationStation;
     }
 
+    function hasCredentialContext(Context calldata context) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(CONTEXT_TYPEHASH, keccak256(bytes(context._hash)), keccak256(bytes(context.provider)))
+            );
+    }
+
     function hashCredentialSubject(CredentialSubject calldata subject) public pure returns (bytes32) {
         return
             keccak256(
                 abi.encode(
                     CREDENTIAL_SUBJECT_TYPEHASH,
+                    hasCredentialContext(subject._context),
                     keccak256(bytes(subject._hash)),
                     keccak256(bytes(subject.id)),
                     keccak256(bytes(subject.provider))
@@ -95,7 +111,7 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
             keccak256(
                 abi.encode(
                     DOCUMENT_TYPEHASH,
-                    keccak256(bytes(document._context)),
+                    _hashArray(document._context),
                     credentialSubjectHash,
                     keccak256(bytes(document.expirationDate)),
                     keccak256(bytes(document.issuanceDate)),
@@ -113,6 +129,9 @@ contract DIDStampVcVerifier is VcVerifier, DIDpkhAdapter {
         address issuerAddress = DIDpkhAdapter.pseudoResolveDidIssuer(document.issuer);
 
         address recoveredAddress = ECDSA.recover(digest, v, r, s);
+
+        console.log("Recovered address: ", recoveredAddress);
+        console.log("Issuer address: ", issuerAddress);
 
         // Here we could check the issuer's address against an on-chain registry.
         // We could provide a verifying contract address when signing the credential which could correspond to this contract

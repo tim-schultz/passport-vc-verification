@@ -1,10 +1,9 @@
 import "@nomicfoundation/hardhat-toolbox";
 import { config as dotenvConfig } from "dotenv";
+import "hardhat-gas-reporter";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
-
-import "hardhat-gas-reporter"
 
 import "./tasks/accounts";
 import "./tasks/didpkh";
@@ -51,8 +50,8 @@ function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
   }
   let accounts;
 
-  if (privateKey) accounts = [`0x${process.env.PRIVATE_KEY}`];
-  else if (mnemonic)
+  // if (privateKey) accounts = [`0x${process.env.PRIVATE_KEY}`];
+  if (mnemonic)
     accounts = {
       count: 20,
       mnemonic,
